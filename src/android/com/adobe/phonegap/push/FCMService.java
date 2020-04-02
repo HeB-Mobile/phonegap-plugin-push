@@ -343,8 +343,9 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
 
       Log.d(LOG_TAG, "create notification");
 
+      //Do not default to appName
       if (title == null || title.isEmpty()) {
-        extras.putString(TITLE, getAppName(this));
+        //extras.putString(TITLE, getAppName(this));
       }
 
       createNotification(context, extras);
@@ -416,9 +417,16 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
       mBuilder = new NotificationCompat.Builder(context);
     }
 
-    mBuilder.setWhen(System.currentTimeMillis()).setContentTitle(fromHtml(extras.getString(TITLE)))
-        .setTicker(fromHtml(extras.getString(TITLE))).setContentIntent(contentIntent).setDeleteIntent(deleteIntent)
+    mBuilder.setWhen(System.currentTimeMillis())
+        .setContentIntent(contentIntent).setDeleteIntent(deleteIntent)
         .setAutoCancel(true);
+
+    //Set title only if title is not empty
+    String title = extras.getString(TITLE);    
+    if (!(title == null || title.isEmpty())) {
+      mBuilder.setContentTitle(fromHtml(title))
+              .setTicker(fromHtml(title));
+    }
 
     SharedPreferences prefs = context.getSharedPreferences(PushPlugin.COM_ADOBE_PHONEGAP_PUSH, Context.MODE_PRIVATE);
     String localIcon = prefs.getString(ICON, null);
