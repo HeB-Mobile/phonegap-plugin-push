@@ -683,10 +683,15 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
           stacking = stacking.replace("%n%", sizeListMessage);
         }
         NotificationCompat.InboxStyle notificationInbox = new NotificationCompat.InboxStyle()
-            .setBigContentTitle(fromHtml(extras.getString(TITLE))).setSummaryText(fromHtml(stacking));
+            .setSummaryText(fromHtml(stacking));
 
         for (int i = messageList.size() - 1; i >= 0; i--) {
           notificationInbox.addLine(fromHtml(messageList.get(i)));
+        }
+
+        String title = extras.getString(TITLE);
+        if (!(title == null || title.isEmpty())) {
+          notificationInbox.setBigContentTitle(fromHtml(title));
         }
 
         mBuilder.setStyle(notificationInbox);
@@ -694,7 +699,12 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
         if (message != null) {
           bigText.bigText(fromHtml(message));
-          bigText.setBigContentTitle(fromHtml(extras.getString(TITLE)));
+
+          String title = extras.getString(TITLE);
+          if (!(title == null || title.isEmpty())) {
+            bigText.setBigContentTitle(fromHtml(title));
+          }
+
           mBuilder.setStyle(bigText);
         }
       }
@@ -703,11 +713,15 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
 
       NotificationCompat.BigPictureStyle bigPicture = new NotificationCompat.BigPictureStyle();
       bigPicture.bigPicture(getBitmapFromURL(extras.getString(PICTURE)));
-      bigPicture.setBigContentTitle(fromHtml(extras.getString(TITLE)));
       bigPicture.setSummaryText(fromHtml(extras.getString(SUMMARY_TEXT)));
 
-      mBuilder.setContentTitle(fromHtml(extras.getString(TITLE)));
       mBuilder.setContentText(fromHtml(message));
+
+      String title = extras.getString(TITLE);
+      if (!(title == null || title.isEmpty())) {
+        bigPicture.setBigContentTitle(fromHtml(title));
+        mBuilder.setContentTitle(fromHtml(title));
+      }
 
       mBuilder.setStyle(bigPicture);
     } else {
@@ -719,7 +733,11 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         mBuilder.setContentText(fromHtml(message));
 
         bigText.bigText(fromHtml(message));
-        bigText.setBigContentTitle(fromHtml(extras.getString(TITLE)));
+
+        String title = extras.getString(TITLE);
+        if (!(title == null || title.isEmpty())) {
+          bigText.setBigContentTitle(fromHtml(title));
+        }
 
         String summaryText = extras.getString(SUMMARY_TEXT);
         if (summaryText != null) {
